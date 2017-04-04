@@ -6,7 +6,7 @@ print(md5.sumhex("123"))
 print("--test stream---")
 local obj = md5.create()
 
-local f = io.open("./lmd5.so","rb")
+local f = io.open("./lmd5.c","rb")
 
 local s 
 local n = 0

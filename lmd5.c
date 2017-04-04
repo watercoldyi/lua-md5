@@ -67,11 +67,36 @@ lsumhex(lua_State *L){
 	return 1;
 }
 
+static int
+lfile(lua_State *L){
+	const char *path = lua_tostring(L,1);
+	FILE *f = fopen(path,"rb");
+	if(f == NULL){
+		lua_pushnil(L);
+		return 1;
+	}
+	char buf[4096];
+	MD5_CTX ctx;
+	MD5Init(&ctx);
+	int n = 0;
+	while(n = fread(buf,1,4096,f)){
+		MD5Update(&ctx,(unsigned char*)buf,n);
+	}
+	fclose(f);
+	MD5Final(&ctx);
+	char hex[32];
+	MD5Hex(&ctx,hex);
+	lua_pushlstring(L,hex,32);
+	return 1;
+
+}
+
 int
 luaopen_lmd5(lua_State *L){
 	static luaL_Reg f[]={
 		{"sumhex",lsumhex},
 		{"create",lcreate},
+		{"file",lfile},
 		{NULL,NULL}
 	};
 	luaL_newlib(L,f);
